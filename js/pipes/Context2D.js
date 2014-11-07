@@ -47,17 +47,24 @@ Context2D.prototype = {
             for (var j = 0; j < this.engine.rows; j++) {
                 positionX = Math.floor(i * this.stepX + this.stepX / 2) + 0.5;
                 positionY = Math.floor(j * this.stepY + this.stepY / 2) + 0.5;
+                var cell = this.engine.map[i][j];
+
+                if (cell.locked) {
+                    gl.fillStyle = "#0A2A0A";
+                    gl.fillRect(positionX - this.stepX / 2, positionY - this.stepY / 2, this.stepX, this.stepY);
+                }
+
                 if (this.engine.startCell.i == i && this.engine.startCell.j == j) {
                     var grd = gl.createRadialGradient(positionX, positionY, 1,
                         positionX, positionY, Math.min(this.stepX/2, this.stepY/2));
                     grd.addColorStop(0, "green");
-                    grd.addColorStop(1, "black");
+                    grd.addColorStop(1, "transparent");
                     gl.fillStyle = grd;
                     gl.fillRect(positionX - this.stepX / 2, positionY - this.stepY / 2, this.stepX, this.stepY);
                 }
 
                 gl.beginPath();
-                var cell = this.engine.map[i][j];
+                
                 
                 if (cell.left) {
                     gl.moveTo(positionX, positionY);
@@ -90,11 +97,16 @@ Context2D.prototype = {
         var i = Math.floor((event.clientX - rect.left) / this.stepX);
         var j = Math.floor((event.clientY - rect.top) / this.stepX);
 
-        if (event.button === 0) {
-            this.engine.rotateCellLeft(i, j);
+        if(!this.engine.map[i][j].locked){
+            if (event.button === 0) {
+                this.engine.rotateCellLeft(i, j);
+            }
+            else if (event.button === 2) {
+                this.engine.rotateCellRight(i, j);
+            }
         }
-        else if (event.button === 2) {
-            this.engine.rotateCellRight(i, j);
+        if (event.button === 1) {
+            this.engine.toggleLock(i,j);
         }
         this.engine.resetConnections();
         this.draw();

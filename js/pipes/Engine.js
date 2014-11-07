@@ -41,7 +41,8 @@ Engine.prototype = {
             down: false,
             left: false,
             right: false,
-            connected: !!connected
+            connected: !!connected,
+            locked: false
         }
     },
 
@@ -51,7 +52,8 @@ Engine.prototype = {
             down: !!random(0, 1),
             left: !!random(0, 1),
             right: !!random(0, 1),
-            connected: !!connected
+            connected: !!connected,
+            locked: false
         }
         
     },
@@ -143,5 +145,8 @@ Engine.prototype = {
             }
         }
         return true;
+    },
+    toggleLock: function (i, j) {
+        this.map[i][j].locked = !this.map[i][j].locked;
     }
 }
