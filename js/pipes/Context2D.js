@@ -5,6 +5,7 @@ Context2D = function (canvas, rows, columns) {
     this.stepX = (this.canvas.width - 1) / this.engine.columns;
     this.stepY = (this.canvas.height - 1) / this.engine.rows;
     this.canvas.addEventListener('mousedown', bind(this, this.onMouseDown), false);
+    this.canvas.addEventListener('touchstart', bind(this, this.touchStart), false);
     this.canvas.addEventListener('contextmenu', function (event) { event.preventDefault(); }, false);
     
 }
@@ -95,6 +96,18 @@ Context2D.prototype = {
         else if (event.button === 2) {
             this.engine.rotateCellRight(i, j);
         }
+        this.engine.resetConnections();
+        this.draw();
+        if (this.engine.checkSolution()) {
+            alert("Solved!");
+        }
+    },
+    touchStart: function (event) {
+        event.preventDefault();
+        var rect = this.canvas.getBoundingClientRect();
+        var i = Math.floor((event.touches[0].pageX - rect.left) / this.stepX);
+        var j = Math.floor((event.touches[0].pageY - rect.top) / this.stepX);
+        this.engine.rotateCellLeft(i, j);
         this.engine.resetConnections();
         this.draw();
         if (this.engine.checkSolution()) {
