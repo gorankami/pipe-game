@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <title>Pipes game</title>
+    <script src="js/Common.js"></script>
+    <script src="js/pipes/Engine.js"></script>
+    <script src="js/pipes/Context2D.js"></script>
+    <script>
+        window.onload = initGame;
+        var game = null;
+        function initGame() {
+            var canvas = document.getElementById("game");
+            game = new Context2D(canvas, 10, 10);
+            game.draw();
+        }
+    </script>
+    <style>
+        body{
+            background-color: gray;
+        }
+
+        canvas{
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game" width="500" height="500"></canvas>
+</body>
+</html>
