@@ -1,25 +1,19 @@
 Engine = function (rows, columns) {
     this.rows = rows;
     this.columns = columns;
-    var i = Math.floor(Math.random() * 9),
-        j = Math.floor(Math.random() * 9);
-
-    this.startCell = {
-        i: i,
-        j: j
-    }
-    //init map
-    this.initMap(true);
-    var cellsForConnecting = [];
-    this.addToStack(cellsForConnecting,i, j, this.direction.any);
-    //this.generateMap(cellsForConnecting);
-    this.resetConnections();
+    this.reset();
 }
 
 Engine.prototype = {
 
     constructor: Engine,
-
+    cellTypes: [
+        ["up"],
+        ["up", "right"],
+        ["up", "down"],
+        ["up", "down", "right"],
+        ["up", "down", "left", "right"]
+    ],
     rows: 0,
     columns: 0,
     map: [],
@@ -115,61 +109,39 @@ Engine.prototype = {
         if (direction == this.direction.down && this.map[i][j].down) return true;
         return false;
     },
+    reset: function(){
+        var i = Math.floor(Math.random() * 9),
+        j = Math.floor(Math.random() * 9);
 
-    generateMap: function (cellsForConnecting) {
-        var temp = cellsForConnecting.pop();
-        var i = temp.i,
-            j = temp.j,
-            direction = temp.direction;
-
-        var cell = this.map[i][j],
-            cellUp = i > 0 ? this.map[i - 1][j] : null,
-            cellDown = i < this.rows - 1 ? this.map[i + 1][j] : null,
-            cellLeft = j > 0 ? this.map[i][j - 1] : null,
-            cellRight = i < this.columns ? this.map[i][j + 1] : null;
-        cell.connected = true;
-
-        if (direction == this.direction.up) {
-            cell.up = true;
-        }else if (direction == this.direction.down) {
-            cell.down = true;
-        }else if (direction == this.direction.left) {
-            cell.left = true;
-        }else if(direction == this.direction.right) {
-            cell.right = true;
+        this.startCell = {
+            i: i,
+            j: j
         }
-
-        var availableConnections = [];
-        if(cellUp    && !cellUp.connected    && !cell.up) availableConnections.push("up");
-        if(cellDown  && !cellDown.connected  && !cell.down ) availableConnections.push("down");
-        if(cellLeft  && !cellLeft.connected  && !cell.left ) availableConnections.push("left");
-        if(cellRight && !cellRight.connected && !cell.right) availableConnections.push("right");
-
-        var numToConnect = random(direction == this.direction.any?1:0, availableConnections.length);
-        var toConnect = [];
-        while (numToConnect--) {
-            var n = random(0, availableConnections.length);
-            cell[availableConnections[n]] = true;
-            toConnect.push(availableConnections[n]);
-        }
-        for(var p =0;p<toConnect.length;p++){
-            if (toConnect[p] == "up") this.addToStack(cellsForConnecting, i - 1, j, this.direction.down);
-            if (toConnect[p] == "down") this.addToStack(cellsForConnecting, i + 1, j, this.direction.up);
-            if (toConnect[p] == "left") this.addToStack(cellsForConnecting, i, j-1, this.direction.right);
-            if (toConnect[p] == "right") this.addToStack(cellsForConnecting, i, j+1, this.direction.left);
-        }
-        if (cellsForConnecting.length > 0) {
-            this.generateMap(cellsForConnecting);
+        //init map
+        this.initMap();
+        this.generateMap(games);
+        this.resetConnections();
+    },
+    generateMap: function (mapData) {
+        for (var i = 0; i < 10; i++) {
+            for (var j = 0; j < 10; j++) {
+                var cellType = this.cellTypes[mapData[i][j]];
+                for (var p = 0; p < cellType.length; p++) {
+                    this.map[j][i][cellType[p]] = true;
+                }
+                var rand = random(0, 3);
+                while (rand--) {
+                    this.rotateCellLeft(j, i);
+                }
+            }
         }
     },
-    addToStack: function (stack, i, j, direction) {
-        for (var p = 0; p < stack.length; p++) {
-            if (stack[p].i == i && stack[p].j == j) return;
+    checkSolution: function () {
+        for (var i = 0; i < 10; i++) {
+            for (var j = 0; j < 10; j++) {
+                if (!this.map[i][j].connected) return false;
+            }
         }
-        stack.push({
-            i: i,
-            j: j,
-            direction:direction
-        });
+        return true;
     }
 }

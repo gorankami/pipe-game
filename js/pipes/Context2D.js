@@ -97,5 +97,8 @@ Context2D.prototype = {
         }
         this.engine.resetConnections();
         this.draw();
+        if (this.engine.checkSolution()) {
+            alert("Solved!");
+        }
     }
 }
