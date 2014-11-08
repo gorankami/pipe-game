@@ -1,6 +1,6 @@
 /*
  * Interface between html and game engine. Can be easily replaced by other UI controllers like WebGL context for instance.
- * @author: Goran Antic
+ * @author Goran Antic
  *
  */
 

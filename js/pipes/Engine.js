@@ -1,5 +1,6 @@
 /*
  * Engine that contains all the logic of a pipes game
+ * @author Goran Antic
  */
 
 

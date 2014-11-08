@@ -1,4 +1,9 @@
-﻿Timer = function (container) {
+﻿/*
+ * Simple timer implementation
+ * @author Goran Antic
+ */
+
+Timer = function (container) {
     this.container = container;
 }
 
@@ -27,6 +32,7 @@ Timer.prototype = {
             this.container.innerHTML = "Timer: " + seconds;
         }
         else {
+            //I would say it's an easter egg, but since this is open source, I don't know...
             this.container.innerHTML = "You are taking too long, I quit! <br/><br/> Kind regards,<br/> timer.";
             this.stop();
         }
