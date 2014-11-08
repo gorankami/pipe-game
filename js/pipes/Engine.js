@@ -1,12 +1,14 @@
+/*
+ * Engine that contains all the logic of a pipes game
+ */
+
+
 Engine = function (rows, columns) {
     this.rows = rows;
     this.columns = columns;
-    this.reset();
 }
 
 Engine.prototype = {
-
-    constructor: Engine,
     cellTypes: [
         ["up"],
         ["up", "right"],
@@ -17,7 +19,7 @@ Engine.prototype = {
     rows: 0,
     columns: 0,
     map: [],
-    startCell: {i:0,j:0},
+    startCell: { i: 0, j: 0 },
     direction: {
         any: 0,
         left: 1,
@@ -25,6 +27,9 @@ Engine.prototype = {
         up: 3,
         down: 4
     },
+
+    constructor: Engine,
+    
     initMap : function(randomize){
         this.map = [];
         for (var i = 0; i < this.rows; i++) {
@@ -46,6 +51,7 @@ Engine.prototype = {
         }
     },
 
+    //needed this on initial engine testing
     createRandomCell: function (connected) {
         return {
             up: !!random(0,1),
@@ -58,7 +64,7 @@ Engine.prototype = {
         
     },
 
-    rotateCellLeft: function (i, j) {
+    rotateCellCCW: function (i, j) {
         var cell = this.map[i][j];
         var temp = cell.left;
         cell.left = cell.up;
@@ -67,7 +73,7 @@ Engine.prototype = {
         cell.down = temp;
     },
 
-    rotateCellRight: function (i, j) {
+    rotateCellCW: function (i, j) {
         var cell = this.map[i][j];
         var temp = cell.left;
         cell.left = cell.down;
@@ -111,7 +117,7 @@ Engine.prototype = {
         if (direction == this.direction.down && this.map[i][j].down) return true;
         return false;
     },
-    reset: function(){
+    restart: function(){
         var i = Math.floor(Math.random() * 9),
         j = Math.floor(Math.random() * 9);
 
@@ -133,7 +139,7 @@ Engine.prototype = {
                 }
                 var rand = random(0, 3);
                 while (rand--) {
-                    this.rotateCellLeft(j, i);
+                    this.rotateCellCCW(j, i);
                 }
             }
         }

@@ -2,34 +2,100 @@
 <html>
 <head>
     <title>Pipes game</title>
+    <style>
+        body {
+            background-color: gray;
+            text-align: center;
+        }
+        #btnNew{
+            border: 1px solid gray;
+        }
+        #timer, #controls{
+            font-family:verdana;
+            font-weight: 600;
+            background-color:white;
+            width:500px;
+            margin-left: auto;
+            margin-right: auto;
+            color: white;
+            background-color:black;
+        }
+        #canvasContainer{
+            height:500px;
+        }
+        canvas {
+            width: 500px;
+            height: 500px;
+        }
+        
+        a:link {
+            text-decoration: none;
+            color: white;
+        }
+
+        a:visited {
+            text-decoration: none;
+            color: white;
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: white;
+        }
+
+        a:active {
+            text-decoration: none;
+            color: white;
+        } 
+        
+    </style>
     <script src="js/Common.js"></script>
+    <script src="js/Timer.js"></script>
     <script src="js/pipes/Engine.js"></script>
     <script src="js/pipes/Context2D.js"></script>
     <script src="js/pipes/games.js"></script>
     <script>
-        window.onload = initGame;
-        var game = null;
+        var gameContext = null,
+            timer = null;
+
         function initGame() {
             var canvas = document.getElementById("game");
-            game = new Context2D(canvas, 10, 10);
-            game.draw();
+            gameContext = new Context2D(canvas, 10, 10);
+            gameContext.start();
+            canvas.addEventListener('contextmenu', function (event) { event.preventDefault(); }, false);
+
+            gameContext.canvas.addEventListener('mousedown', canvasClick, false);
+            gameContext.canvas.addEventListener('touchstart', canvasTouch, false);
+
+            var timerContainer = document.getElementById("timer");
+            timer = new Timer(timerContainer);
+            timer.start();
         }
-    </script>
-    <style>
-        body{
-            background-color: gray;
+        
+        //events
+        function canvasClick(event) {
+            event.preventDefault();
+            gameContext.click(event.button, event.clientX, event.clientY, onWin);
         }
 
-        canvas{
-            width: 500px;
-            height: 500px;
+        function canvasTouch(event) {
+            event.preventDefault();
+            gameContext.click(0, event.touches[0].pageX, event.touches[0].pageY, onWin);
         }
-        body {
-            text-align: center;
+
+        function onWin() {
+            gameContext.canvas.removeEventListener('mousedown', canvasClick, false);
+            gameContext.canvas.removeEventListener('touchstart', canvasTouch, false);
         }
-    </style>
+
+        window.onload = initGame;
+    </script>
 </head>
 <body>
-    <canvas id="game" width="500" height="500"></canvas>
+    <div id="timer"></div>
+    <div id="canvasContainer">
+        <canvas id="game" width="500" height="500"></canvas>
+    </div>
+    <div id="controls" ><a href="index.html" >New game</a></div>
 </body>
 </html>

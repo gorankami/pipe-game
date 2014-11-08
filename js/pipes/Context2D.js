@@ -1,13 +1,16 @@
+/*
+ * Interface between html and game engine. Can be easily replaced by other UI controllers like WebGL context for instance.
+ * @author: Goran Antic
+ *
+ */
+
+
 Context2D = function (canvas, rows, columns) {
     this.gl = canvas.getContext("2d");
     this.engine = new Engine(rows, columns);
     this.canvas = canvas;
     this.stepX = (this.canvas.width - 1) / this.engine.columns;
     this.stepY = (this.canvas.height - 1) / this.engine.rows;
-    this.canvas.addEventListener('mousedown', bind(this, this.onMouseDown), false);
-    this.canvas.addEventListener('touchstart', bind(this, this.touchStart), false);
-    this.canvas.addEventListener('contextmenu', function (event) { event.preventDefault(); }, false);
-    
 }
 
 Context2D.prototype = {
@@ -15,8 +18,10 @@ Context2D.prototype = {
     engine: null,
     canvas: null,
     constructor: Context2D,
+
     draw: function(){
         var gl = this.gl;
+        gl.globalAlpha = 1;
         gl.fillStyle = "Black";
         gl.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -49,11 +54,13 @@ Context2D.prototype = {
                 positionY = Math.floor(j * this.stepY + this.stepY / 2) + 0.5;
                 var cell = this.engine.map[i][j];
 
+                //locked cell
                 if (cell.locked) {
                     gl.fillStyle = "#0A2A0A";
                     gl.fillRect(positionX - this.stepX / 2, positionY - this.stepY / 2, this.stepX, this.stepY);
                 }
 
+                //source cell
                 if (this.engine.startCell.i == i && this.engine.startCell.j == j) {
                     var grd = gl.createRadialGradient(positionX, positionY, 1,
                         positionX, positionY, Math.min(this.stepX/2, this.stepY/2));
@@ -63,9 +70,8 @@ Context2D.prototype = {
                     gl.fillRect(positionX - this.stepX / 2, positionY - this.stepY / 2, this.stepX, this.stepY);
                 }
 
+                //cell circuit lines
                 gl.beginPath();
-                
-                
                 if (cell.left) {
                     gl.moveTo(positionX, positionY);
                     gl.lineTo(positionX - this.stepX / 2, positionY);
@@ -91,39 +97,49 @@ Context2D.prototype = {
             }
         }
     },
-    onMouseDown: function (event) {
-        event.preventDefault();
-        var rect = this.canvas.getBoundingClientRect();
-        var i = Math.floor((event.clientX - rect.left) / this.stepX);
-        var j = Math.floor((event.clientY - rect.top) / this.stepX);
 
-        if(!this.engine.map[i][j].locked){
-            if (event.button === 0) {
-                this.engine.rotateCellLeft(i, j);
+    drawWin: function(){
+        var gl = this.gl;
+        gl.globalAlpha = 0.8;
+        gl.fillStyle = "Black";
+        gl.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        gl.textAlign = 'center';
+        gl.font = '30pt Calibri';
+        gl.fillStyle = 'Chartreuse';
+        gl.fillText('You won!', this.canvas.width / 2, this.canvas.height / 2);
+    },
+    start: function(){
+        this.engine.restart();
+        this.draw();
+    },
+
+    click: function (button, x, y, onWin) {
+        var rect = this.canvas.getBoundingClientRect();
+        var i = Math.floor((x - rect.left) / this.stepX);
+        var j = Math.floor((y - rect.top) / this.stepX);
+
+        //cannot rotate on locked cells
+        if (!this.engine.map[i][j].locked) {
+            //left click, rotate counter clockwise
+            if (button === 0) {
+                this.engine.rotateCellCCW(i, j);
             }
-            else if (event.button === 2) {
-                this.engine.rotateCellRight(i, j);
+            //right click, rotate clockwise
+            else if (button === 2) {
+                this.engine.rotateCellCW(i, j);
             }
         }
-        if (event.button === 1) {
+        //lock a cell
+        if (button === 1) {
             this.engine.toggleLock(i,j);
         }
         this.engine.resetConnections();
         this.draw();
         if (this.engine.checkSolution()) {
-            alert("Solved!");
-        }
-    },
-    touchStart: function (event) {
-        event.preventDefault();
-        var rect = this.canvas.getBoundingClientRect();
-        var i = Math.floor((event.touches[0].pageX - rect.left) / this.stepX);
-        var j = Math.floor((event.touches[0].pageY - rect.top) / this.stepX);
-        this.engine.rotateCellLeft(i, j);
-        this.engine.resetConnections();
-        this.draw();
-        if (this.engine.checkSolution()) {
-            alert("Solved!");
+            this.drawWin();
+            timer.stop();
+            onWin.call();
         }
     }
 }
