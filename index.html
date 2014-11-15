@@ -6,23 +6,38 @@
         body {
             background-color: gray;
             text-align: center;
+			font-family:verdana;
         }
+		
+		p {
+			text-align:left;
+		}
+		
         #btnNew{
             border: 1px solid gray;
         }
-        #timer, #controls{
-            font-family:verdana;
+        #timer, #controls, #canvasContainer{
             font-weight: 600;
-            background-color:white;
             width:500px;
             margin-left: auto;
             margin-right: auto;
             color: white;
             background-color:black;
         }
+		
         #canvasContainer{
             height:500px;
         }
+		#description{
+			width:500px;
+            margin-left: auto;
+            margin-right: auto;
+			background-color:white;
+			margin-top:10px;
+			padding:5px;
+			border: 2px solid black;
+			border-radius: 25px;
+		}
         canvas {
             width: 500px;
             height: 500px;
@@ -93,9 +108,17 @@
 </head>
 <body>
     <div id="timer"></div>
-    <div id="canvasContainer">
-        <canvas id="game" width="500" height="500"></canvas>
+	<div id="canvasContainer">
+        <canvas id="game" width="500" height="500" >
+			Unfortunately, your browser does not support HTML5 canvas element.
+		</canvas>
     </div>
     <div id="controls" ><a href="index.html" >New game</a></div>
+	<div id="description" >
+		<h4>Hot to play?</h4>
+		<p>One needs to rotate cells so their alignment can allow the current to pass through them. There is one green radial source of the current, that can also be rotated. A cell has a current flowing through it when it turns green.</p>
+		<h4>Controls</h4>
+		<p>Left click = Rotate counter-clockwise<br/>Right click = Rotate clockwise<br/>Middle click = lock a cell against rotation</p>
+	</div>
 </body>
 </html>
