@@ -1,0 +1,59 @@
+﻿body {
+    background-color: gray;
+    text-align: center;
+	font-family:verdana;
+}
+		
+p {
+	text-align:left;
+}
+		
+#btnNew{
+    border: 1px solid gray;
+}
+#timer, #controls, #canvasContainer{
+    font-weight: 600;
+    width:500px;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+    background-color:black;
+}
+		
+#canvasContainer{
+    height:500px;
+}
+#description{
+	width:500px;
+    margin-left: auto;
+    margin-right: auto;
+	background-color:white;
+	margin-top:10px;
+	padding:5px;
+	border: 2px solid black;
+	border-radius: 25px;
+}
+canvas {
+    width: 500px;
+    height: 500px;
+}
+        
+a:link {
+    text-decoration: none;
+    color: white;
+}
+
+a:visited {
+    text-decoration: none;
+    color: white;
+}
+
+a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+a:active {
+    text-decoration: none;
+    color: white;
+} 
