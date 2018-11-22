@@ -1,63 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Pipes game</title>
     <link rel="stylesheet" type="text/css" href="style/style.css" />
     <script src="js/Common.js"></script>
     <script src="js/Timer.js"></script>
     <script src="js/pipes/Engine.js"></script>
     <script src="js/pipes/Context2D.js"></script>
+    <script src="js/pipes/GameCreator.js"></script>
     <script src="js/pipes/games.js"></script>
     <script>
-        var gameContext = null,
-            timer = null;
+      var gameContext = null,
+        timer = null;
 
-        function initGame() {
-            var canvas = document.getElementById("game");
-            gameContext = new Context2D(canvas, 10, 10);
-            gameContext.start();
-            canvas.addEventListener('contextmenu', function (event) { event.preventDefault(); }, false);
-
-            gameContext.canvas.addEventListener('mousedown', canvasClick, false);
-            gameContext.canvas.addEventListener('touchstart', canvasTouch, false);
-
-            var timerContainer = document.getElementById("timer");
-            timer = new Timer(timerContainer);
-            timer.start();
-        }
-        
-        //events
-        function canvasClick(event) {
+      function initGame() {
+        var canvas = document.getElementById("game");
+        gameContext = new Context2D(canvas, 10, 10);
+        gameContext.start();
+        canvas.addEventListener(
+          "contextmenu",
+          function(event) {
             event.preventDefault();
-            gameContext.click(event.button, event.clientX, event.clientY, onWin);
-        }
+          },
+          false
+        );
 
-        function canvasTouch(event) {
-            event.preventDefault();
-            gameContext.click(0, event.touches[0].pageX, event.touches[0].pageY, onWin);
-        }
+        gameContext.canvas.addEventListener("mousedown", canvasClick, false);
+        gameContext.canvas.addEventListener("touchstart", canvasTouch, false);
 
-        function onWin() {
-            gameContext.canvas.removeEventListener('mousedown', canvasClick, false);
-            gameContext.canvas.removeEventListener('touchstart', canvasTouch, false);
-        }
+        var timerContainer = document.getElementById("timer");
+        timer = new Timer(timerContainer);
+        timer.start();
+      }
 
-        window.onload = initGame;
+      //events
+      function canvasClick(event) {
+        event.preventDefault();
+        gameContext.click(event.button, event.clientX, event.clientY, onWin);
+      }
+
+      function canvasTouch(event) {
+        event.preventDefault();
+        gameContext.click(
+          0,
+          event.touches[0].pageX,
+          event.touches[0].pageY,
+          onWin
+        );
+      }
+
+      function onWin() {
+        gameContext.canvas.removeEventListener("mousedown", canvasClick, false);
+        gameContext.canvas.removeEventListener(
+          "touchstart",
+          canvasTouch,
+          false
+        );
+      }
+
+      window.onload = initGame;
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="timer"></div>
-	<div id="canvasContainer">
-        <canvas id="game" width="500" height="500" >
-			Unfortunately, your browser does not support HTML5 canvas element.
-		</canvas>
+    <div id="canvasContainer">
+      <canvas id="game" width="500" height="500">
+        Unfortunately, your browser does not support HTML5 canvas element.
+      </canvas>
     </div>
-    <div id="controls" ><a href="index.html" >New game</a></div>
-	<div id="description" >
-		<h4>Hot to play?</h4>
-		<p>One needs to rotate cells so their alignment can allow the current to pass through them. There is one green radial source of the current, that can also be rotated. A cell has a current flowing through it when it turns green.</p>
-		<h4>Controls</h4>
-		<p>Left click = Rotate counter-clockwise<br/>Right click = Rotate clockwise<br/>Middle click = lock a cell against rotation</p>
-	</div>
-</body>
+    <div id="controls"><a href="index.html">New game</a></div>
+    <div id="description">
+      <h4>Hot to play?</h4>
+      <p>
+        One needs to rotate cells so their alignment can allow the current to
+        pass through them. There is one green radial source of the current, that
+        can also be rotated. A cell has a current flowing through it when it
+        turns green.
+      </p>
+      <h4>Controls</h4>
+      <p>
+        Left click = Rotate counter-clockwise<br />Right click = Rotate
+        clockwise<br />Middle click = lock a cell against rotation
+      </p>
+    </div>
+  </body>
 </html>
