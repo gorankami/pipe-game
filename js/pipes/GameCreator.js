@@ -1,96 +1,107 @@
 const WHITE = 0;
 const GRAY = 1;
 const BLACK = 2;
-//put it in a queue and color it gray
-function createGameMatrix(m, n) {
-  //create matrix of white not connected items
+
+function EmptyCell(x, y) {
+  return {
+    color: WHITE,
+    x,
+    y,
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  };
+}
+
+function EmptyMatrix(m, n) {
   const matrix = [];
   for (let i = 0; i < m; i++) {
     matrix[i] = [];
     for (let j = 0; j < n; j++) {
-      matrix[i][j] = { color: WHITE, x: i, y: j };
+      matrix[i][j] = EmptyCell(i, j);
     }
   }
+}
+
+function getNeighbours(matrix, item) {
+  let x = item.x,
+    y = item.y;
+  return {
+    up: y > 0 ? matrix[x][y - 1] : undefined,
+    down: y < matrix[0].length - 1 ? matrix[x][y + 1] : undefined,
+    left: x > 0 ? matrix[x - 1][y] : undefined,
+    right: x < matrix.length - 1 ? matrix[x + 1][y] : undefined
+  };
+}
+
+function random(max) {
+  return Math.floor(Math.random * max);
+}
+
+function getAvailableConnections(matrix, item) {
+  const connections = [];
+
+  const { up, down, left, right } = getNeighbours(matrix, item);
+  if (up && up.color === WHITE) {
+    connections.push[{ direction: "up", neighbour: up }];
+  }
+  if (down && down.color === WHITE) {
+    connections.push[{ direction: "down", neighbour: down }];
+  }
+
+  if (left && left.color === WHITE) {
+    connections.push[{ direction: "left", neighbour: left }];
+  }
+  if (right && right.color === WHITE) {
+    connections.push[{ direction: "right", neighbour: right }];
+  }
+  return connections;
+}
+
+function oppositeDirection(direction) {
+  switch (direction) {
+    case "up":
+      return "down";
+    case "down":
+      return "up";
+    case "left":
+      return "right";
+    case "right":
+      return "left";
+  }
+}
+
+function createGameMatrix(m, n) {
+  const matrix = EmptyMatrix(m, n);
 
   const Q = [];
-  //get random cell
-  const firstRandomItem =
-    matrix[Math.floor(Math.random() * m)][Math.floor(Math.random() * n)];
-  //put it in a queue and color it gray
-  firstRandomItem.color = GRAY;
-  Q.push(firstRandomItem);
 
-  //loop while items in queue
+  const start = matrix[random(m)][random(n)];
+  start.color = GRAY;
+  Q.push(start);
+
   while (Q.length) {
-    //dequeue item
     const item = Q.shift();
-    const availableConnections = [];
-    //connect item to black neighbours that are connected to you
-    //up
-    if (item.y > 0) {
-      const neighbour = matrix[(item.x, item.y - 1)];
-      if (neighbour.color === BLACK && neighbour.down) {
-        item.up = true;
-      } else {
-        availableConnections.push["up"];
-      }
-    }
-    //down
-    if (item.y < n - 1) {
-      const neighbour = matrix[(item.x, item.y + 1)];
-      if (neighbour.color === BLACK && neighbour.up) {
-        item.down = true;
-      } else {
-        availableConnections.push["down"];
-      }
-    }
-    //left
-    if (item.x > 0) {
-      const neighbour = matrix[(item.x - 1, item.y)];
-      if (neighbour.color === BLACK && neighbour.right) {
-        item.left = true;
-      } else {
-        availableConnections.push["left"];
-      }
-    }
-    //right
-    if (item.x < m - 1) {
-      const neighbour = matrix[(item.x + 1, item.y)];
-      if (neighbour.color === BLACK && neighbour.left) {
-        item.right = true;
-      } else {
-        availableConnections.push["right"];
-      }
-    }
-    //get random num connections based on non-black neighbours
-    const numConnections = Math.floor(
-      Math.random() * (availableConnections.length - 1) + 1
-    );
-    for (let i = 0; i < numConnections; i++) {
-      //pop a random connection from availableConnections and connect em + add em to queue
-      const itemToPop = Math.floor(
-        Math.random() * (availableConnections.length - 1) + 1
-      );
-      const direction = availableConnections[itemToPop];
+    const availableConnections = getAvailableConnections(matrix, item);
+    const connectionsToGenerate = random(availableConnections.length - 1) + 1;
+
+    //pop a random connection from availableConnections and connect em + add em to queue
+    for (let i = 0; i < connectionsToGenerate; i++) {
+      const itemToPop = random(availableConnections.length - 1) + 1;
+      const { direction, neighbour } = availableConnections[itemToPop];
+
       availableConnections.splice(itemToPop, 1);
 
-      item[direction] = true;
-      const queueItem = null;
-      switch (direction) {
-        case "up":
-          queueItem = matrix[item.x][item.y - 1];
-        case "down":
-          queueItem = matrix[item.x][item.y + 1];
-        case "left":
-          queueItem = matrix[item.x - 1][item.y];
-        case "right":
-          queueItem = matrix[item.x + 1][item.y];
-      }
-      Q.color = GRAY;
+      item[direction] = neighbour;
+      neighbour[oppositeDirection(direction)] = item;
+      const queueItem = neighbour;
+      queueItem.color = GRAY;
       Q.push(queueItem);
     }
 
-    if (Q.length <= 0) {
+    //edge case when queue is empty but there are islands left on the matrix (missed connections)
+    if (Q.length < 0) {
       //collect all white items that are neighbouring a black cell
       const collection = [];
       //loop arrays in matrix
@@ -158,6 +169,12 @@ function createGameMatrix(m, n) {
   }
 
   //convert the matrix to connection nums
+  const mat2 = convertMatrix(matrix);
+  //return
+  return mat2;
+}
+
+function convertMatrix(matrix) {
   for (let array of matrix) {
     for (let i in array) {
       let count = 0;
@@ -168,6 +185,4 @@ function createGameMatrix(m, n) {
       array[i] = count;
     }
   }
-  //return
-  return matrix;
 }
