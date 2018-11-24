@@ -8,14 +8,13 @@
     <script src="js/pipes/Engine.js"></script>
     <script src="js/pipes/Context2D.js"></script>
     <script src="js/pipes/GameCreator.js"></script>
-    <script src="js/pipes/games.js"></script>
     <script>
       var gameContext = null,
         timer = null;
 
       function initGame() {
         var canvas = document.getElementById("game");
-        gameContext = new Context2D(canvas, 10, 10);
+        gameContext = new Context2D(canvas, 5, 5);
         gameContext.start();
         canvas.addEventListener(
           "contextmenu",
