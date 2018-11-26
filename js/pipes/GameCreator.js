@@ -5,6 +5,7 @@ const BLACK = 2;
 function EmptyCell(x, y) {
   return {
     color: WHITE,
+    neighbours: [],
     x,
     y
   };
@@ -16,40 +17,20 @@ function EmptyMatrix(m, n) {
     matrix[i] = [];
     for (let j = 0; j < n; j++) {
       matrix[i][j] = EmptyCell(i, j);
+      const item = matrix[i][j];
+      if (j > 0) {
+        const up = matrix[i][j - 1];
+        item.neighbours.push({ direction: "up", neighbour: up });
+        up.neighbours.push({ direction: "down", neighbour: item });
+      }
+      if (i > 0) {
+        const left = matrix[i - 1][j];
+        item.neighbours.push({ direction: "left", neighbour: left });
+        left.neighbours.push({ direction: "right", neighbour: item });
+      }
     }
   }
   return matrix;
-}
-
-function getNeighbours(matrix, item) {
-  let x = item.x,
-    y = item.y;
-  return {
-    up: y > 0 ? matrix[x][y - 1] : undefined,
-    down: y < matrix[0].length - 1 ? matrix[x][y + 1] : undefined,
-    left: x > 0 ? matrix[x - 1][y] : undefined,
-    right: x < matrix.length - 1 ? matrix[x + 1][y] : undefined
-  };
-}
-
-function getAvailableConnections(matrix, item) {
-  const connections = [];
-
-  const { up, down, left, right } = getNeighbours(matrix, item);
-  if (up && up.color === WHITE) {
-    connections.push({ direction: "up", neighbour: up });
-  }
-  if (down && down.color === WHITE) {
-    connections.push({ direction: "down", neighbour: down });
-  }
-
-  if (left && left.color === WHITE) {
-    connections.push({ direction: "left", neighbour: left });
-  }
-  if (right && right.color === WHITE) {
-    connections.push({ direction: "right", neighbour: right });
-  }
-  return connections;
 }
 
 function oppositeDirection(direction) {
@@ -77,7 +58,11 @@ function createGameMatrix(m, n) {
   while (Q.length) {
     const item = Q.shift();
     item.color = BLACK;
-    const availableConnections = getAvailableConnections(matrix, item);
+    const availableConnections = item.neighbours.filter(function(
+      neighbourObject
+    ) {
+      return neighbourObject.neighbour.color === WHITE;
+    });
     const connectionsToGenerate = random(0, availableConnections.length);
 
     //pop a random connection from availableConnections and connect em + add em to queue
@@ -95,48 +80,47 @@ function createGameMatrix(m, n) {
     }
 
     //edge case when queue is empty but there are islands left on the matrix (missed connections)
-    if (Q.length === 0) {
-      //TODO: THIS PART DOESNT WORK
+    if (Q.length == 0) {
       //collect all white items that are neighbouring a black cell
-
-      const collection = collectWhitesWithBlackNeighbours(matrix);
-
-      //if non zero items...
-      if (collection.length > 0) {
-        //get random item from the collection
-        const collectionItem = collection[random(0, collection.length - 1)];
-        //force one connection on the random neighbouring black item (but not on the selected item itself)
-        const neighbourConnection =
-          collectionItem.neighbours[
-            random(0, collectionItem.neighbours.length - 1)
+      const islandItem = pickFromIslands(matrix);
+      if (!!islandItem) {
+        const blackNeighbours = islandItem.neighbours.filter(function(
+          neighbourObject
+        ) {
+          return neighbourObject.neighbour.color === BLACK;
+        });
+        if (blackNeighbours.length) {
+          const { direction, neighbour } = blackNeighbours[
+            random(0, blackNeighbours.length - 1)
           ];
-        if (neighbourConnection === "up")
-          matrix[collectionItem.candidate.x][
-            collectionItem.candidate.y - 1
-          ].down = true;
-        if (neighbourConnection === "down")
-          matrix[collectionItem.candidate.x][
-            collectionItem.candidate.y + 1
-          ].up = true;
-        if (neighbourConnection === "left")
-          matrix[collectionItem.candidate.x - 1][
-            collectionItem.candidate.y
-          ].right = true;
-        if (neighbourConnection === "right")
-          matrix[collectionItem.candidate.x + 1][
-            collectionItem.candidate.y
-          ].left = true;
-        //enqueue item
-        Q.push(collectionItem.candidate);
+          islandItem[direction] = neighbour;
+          neighbour[oppositeDirection(direction)] = islandItem;
+          Q.push(islandItem);
+        }
       }
     }
   }
 
   //convert the matrix to connection nums
   const mat2 = convertMatrix(matrix);
-  console.log(matrix);
-  console.log(mat2);
   return mat2;
+}
+
+function pickFromIslands(matrix) {
+  let collection = [];
+  matrix.forEach(function(array) {
+    const arrayCollection = array.filter(function(item) {
+      return item.color === WHITE && hasBlackNeighbour(item);
+    });
+    collection = collection.concat(arrayCollection);
+  });
+  return collection ? collection[random(0, collection.length - 1)] : null;
+}
+
+function hasBlackNeighbour(item) {
+  return !!item.neighbours.find(function(neighbourObject) {
+    return neighbourObject.neighbour.color === BLACK;
+  });
 }
 
 function convertMatrix(matrix) {
