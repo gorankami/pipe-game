@@ -1,0 +1,28 @@
+{
+  "name": "pipe-game",
+  "version": "1.0.0",
+  "description": "\u001c\u001c\u001cPipe game is a game for HTML5 browsers, but the project exists for educational purposes and my personal investigation of gaming in browsers",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gorankami/pipe-game.git"
+  },
+  "keywords": [
+    "game",
+    "canvas"
+  ],
+  "author": "@gorankami",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gorankami/pipe-game/issues"
+  },
+  "homepage": "https://github.com/gorankami/pipe-game#readme",
+  "dependencies": {
+    "webpack": "^4.27.0",
+    "webpack-cli": "^3.1.2"
+  }
+}

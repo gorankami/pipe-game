@@ -1,3 +1,8 @@
+import {
+  random
+} from "./../Common"
+
+
 const WHITE = 0;
 const GRAY = 1;
 const BLACK = 2;
@@ -20,13 +25,25 @@ function EmptyMatrix(m, n) {
       const item = matrix[i][j];
       if (j > 0) {
         const up = matrix[i][j - 1];
-        item.neighbours.push({ direction: "up", neighbour: up });
-        up.neighbours.push({ direction: "down", neighbour: item });
+        item.neighbours.push({
+          direction: "up",
+          neighbour: up
+        });
+        up.neighbours.push({
+          direction: "down",
+          neighbour: item
+        });
       }
       if (i > 0) {
         const left = matrix[i - 1][j];
-        item.neighbours.push({ direction: "left", neighbour: left });
-        left.neighbours.push({ direction: "right", neighbour: item });
+        item.neighbours.push({
+          direction: "left",
+          neighbour: left
+        });
+        left.neighbours.push({
+          direction: "right",
+          neighbour: item
+        });
       }
     }
   }
@@ -46,7 +63,7 @@ function oppositeDirection(direction) {
   }
 }
 
-function createGameMatrix(m, n) {
+export function createGameMatrix(m, n) {
   const matrix = EmptyMatrix(m, n);
 
   const Q = [];
@@ -58,7 +75,7 @@ function createGameMatrix(m, n) {
   while (Q.length) {
     const item = Q.shift();
     item.color = BLACK;
-    const availableConnections = item.neighbours.filter(function(
+    const availableConnections = item.neighbours.filter(function (
       neighbourObject
     ) {
       return neighbourObject.neighbour.color === WHITE;
@@ -69,7 +86,10 @@ function createGameMatrix(m, n) {
     for (let i = 0; i < connectionsToGenerate; i++) {
       const itemToPop = random(0, availableConnections.length - 1);
 
-      const { direction, neighbour } = availableConnections[itemToPop];
+      const {
+        direction,
+        neighbour
+      } = availableConnections[itemToPop];
 
       availableConnections.splice(itemToPop, 1);
 
@@ -84,13 +104,16 @@ function createGameMatrix(m, n) {
       //collect all white items that are neighbouring a black cell
       const islandItem = pickFromIslands(matrix);
       if (!!islandItem) {
-        const blackNeighbours = islandItem.neighbours.filter(function(
+        const blackNeighbours = islandItem.neighbours.filter(function (
           neighbourObject
         ) {
           return neighbourObject.neighbour.color === BLACK;
         });
         if (blackNeighbours.length) {
-          const { direction, neighbour } = blackNeighbours[
+          const {
+            direction,
+            neighbour
+          } = blackNeighbours[
             random(0, blackNeighbours.length - 1)
           ];
           islandItem[direction] = neighbour;
@@ -108,8 +131,8 @@ function createGameMatrix(m, n) {
 
 function pickFromIslands(matrix) {
   let collection = [];
-  matrix.forEach(function(array) {
-    const arrayCollection = array.filter(function(item) {
+  matrix.forEach(function (array) {
+    const arrayCollection = array.filter(function (item) {
       return item.color === WHITE && hasBlackNeighbour(item);
     });
     collection = collection.concat(arrayCollection);
@@ -118,7 +141,7 @@ function pickFromIslands(matrix) {
 }
 
 function hasBlackNeighbour(item) {
-  return !!item.neighbours.find(function(neighbourObject) {
+  return !!item.neighbours.find(function (neighbourObject) {
     return neighbourObject.neighbour.color === BLACK;
   });
 }
@@ -142,9 +165,9 @@ function convertMatrix(matrix) {
         //if valued up = 1; right = 2; down = 1; left = 2;. Check combinations on paper and you'll see
         if (
           (!!array[i].up && 1) +
-            (!!array[i].right && 2) +
-            (!!array[i].down && 1) +
-            (!!array[i].left && 2) ===
+          (!!array[i].right && 2) +
+          (!!array[i].down && 1) +
+          (!!array[i].left && 2) ===
           3
         ) {
           cellType = 1; //two close connections
