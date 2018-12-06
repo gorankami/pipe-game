@@ -1,59 +1,64 @@
 ﻿body {
     background-color: gray;
     text-align: center;
-	font-family:verdana;
+    font-family: verdana;
 }
-		
+
 p {
-	text-align:left;
+    text-align: left;
 }
-		
-#btnNew{
+
+#btnNew {
     border: 1px solid gray;
 }
-#timer, #controls, #canvasContainer{
+
+#timer,
+#controls,
+#canvasContainer {
     font-weight: 600;
-    width:500px;
+    width: 500px;
     margin-left: auto;
     margin-right: auto;
     color: white;
-    background-color:black;
+    background-color: black;
 }
-		
-#canvasContainer{
-    height:500px;
+
+#canvasContainer {
+    height: 500px;
 }
-#description{
-	width:500px;
+
+#description {
+    width: 500px;
     margin-left: auto;
     margin-right: auto;
-	background-color:white;
-	margin-top:10px;
-	padding:5px;
-	border: 2px solid black;
-	border-radius: 25px;
+    background-color: white;
+    margin-top: 10px;
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 25px;
 }
+
 canvas {
     width: 500px;
     height: 500px;
 }
-        
-a:link {
+
+.whitelink:link {
     text-decoration: none;
     color: white;
 }
 
-a:visited {
+.whitelink:visited {
     text-decoration: none;
     color: white;
 }
 
-a:hover {
+.whitelink:hover {
     text-decoration: none;
     color: white;
 }
 
-a:active {
+.whitelink:active {
     text-decoration: none;
     color: white;
-} 
+}
