@@ -80,7 +80,7 @@ export function createGameMatrix(m, n) {
     ) {
       return neighbourObject.neighbour.color === WHITE;
     });
-    const connectionsToGenerate = random(0, availableConnections.length);
+    const connectionsToGenerate = random(0, Math.min(!!countConnections(item) ? 2 : 3, availableConnections.length));
 
     //pop a random connection from availableConnections and connect em + add em to queue
     for (let i = 0; i < connectionsToGenerate; i++) {
@@ -107,7 +107,7 @@ export function createGameMatrix(m, n) {
         const blackNeighbours = islandItem.neighbours.filter(function (
           neighbourObject
         ) {
-          return neighbourObject.neighbour.color === BLACK;
+          return neighbourObject.neighbour.color === BLACK && countConnections(neighbourObject.neighbour) < 3;
         });
         if (blackNeighbours.length) {
           const {
@@ -142,8 +142,15 @@ function pickFromIslands(matrix) {
 
 function hasBlackNeighbour(item) {
   return !!item.neighbours.find(function (neighbourObject) {
-    return neighbourObject.neighbour.color === BLACK;
+    return neighbourObject.neighbour.color === BLACK && countConnections(neighbourObject.neighbour) < 3;
   });
+}
+
+function countConnections(item) {
+  return (!!item.up && 1) +
+    (!!item.right && 1) +
+    (!!item.down && 1) +
+    (!!item.left && 1);
 }
 
 function convertMatrix(matrix) {
@@ -180,49 +187,4 @@ function convertMatrix(matrix) {
     result.push(row);
   }
   return result;
-}
-
-function collectWhitesWithBlackNeighbours(matrix) {
-  const collection = [];
-  //loop arrays in matrix
-  for (let array of matrix) {
-    //loop items in array
-    for (let candidate of array) {
-      //if white and if on of neighbours is black
-      if (candidate.color === WHITE) {
-        const neighbours = [];
-
-        if (
-          candidate.x > 0 &&
-          matrix[candidate.x - 1][candidate.y].color === BLACK
-        )
-          neighbours.push("left");
-        if (
-          candidate.x < m - 1 &&
-          matrix[candidate.x + 1][candidate.y].color === BLACK
-        )
-          neighbours.push("right");
-
-        if (
-          candidate.y > 0 &&
-          matrix[candidate.x][candidate.y - 1].color === BLACK
-        )
-          neighbours.push("up");
-
-        if (
-          candidate.y < n - 1 &&
-          matrix[candidate.x][candidate.y + 1].color === BLACK
-        )
-          neighbours.push("down");
-
-        if (neighbours.length) {
-          collection.push({
-            candidate,
-            neighbours
-          });
-        }
-      }
-    }
-  }
-  return collection;
 }
