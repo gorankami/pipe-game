@@ -7,6 +7,7 @@ import Engine from "./Engine"
 
 export default class Context2D {
   constructor(canvas, rows, columns) {
+    this.won = false;
     this.gl = canvas.getContext("2d");
     this.engine = new Engine(rows, columns);
     this.canvas = canvas;
@@ -122,11 +123,13 @@ export default class Context2D {
   }
 
   start() {
+    this.won = false;
     this.engine.restart();
     this.draw();
   }
 
   click(button, x, y, onWin) {
+    if(this.won) return false;
     let rect = this.canvas.getBoundingClientRect();
     let i = Math.floor((x - rect.left) / this.stepX);
     let j = Math.floor((y - rect.top) / this.stepX);
@@ -149,6 +152,7 @@ export default class Context2D {
     this.engine.resetConnections();
     this.draw();
     if (this.engine.checkSolution()) {
+      this.won = true;
       this.drawWin();
       timer.stop();
       onWin.call();
